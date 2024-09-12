@@ -88,7 +88,7 @@ class Rule: # {{{
      #  lhs = ruleName
      #
 
-        print(f'rulename = {name}')
+        print(f'rulename = {name}, ' + str(rhs))
 
         self.lhs = name
         if rhs == ['!εpslon']:

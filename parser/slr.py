@@ -57,16 +57,17 @@ def augment(grammar_str): # {{{
     print('Start symbol')
     print(rhs)
 
-    aug = Rule( rules [0][0]+"'", tuple(rhs) )
+    aug = Rule( rules [0][0]+ "'" , tuple(rhs) )
 
     s = State()
     s.add_rule(aug)
     Rule.augmented.append(aug)
 
     for rule in rules :
+        print('augmented.append')
         Rule.augmented.append(Rule( rule[0], rule[1] ))
 
-    return s, extract_symbols(rules )
+    return s, extract_symbols(rules)
 
 # }}}
 def extract_symbols(rules): # {{{
