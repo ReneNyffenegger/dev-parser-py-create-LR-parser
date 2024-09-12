@@ -1,9 +1,10 @@
+# vim: foldmarker={{{,}}} foldmethod=marker
 from state import Rule
 
 
 _first = {}
 _follow = {}
-def first_pos(symbol):
+def first_pos(symbol): # {{{
     first = set()
     if not symbol.startswith('`'):
         return set([symbol])
@@ -26,7 +27,8 @@ def first_pos(symbol):
     _first[symbol]=list(first)
     return list(first)
 
-def follow_pos(symbol, A=None):
+# }}}
+def follow_pos(symbol, A=None): # {{{
     follow = set()
     if symbol.endswith("'"):
         follow.add('$')
@@ -56,10 +58,12 @@ def follow_pos(symbol, A=None):
     _follow[symbol]=list(follow)          
     return follow
 
-def test_frstfllw(symbols):
+# }}}
+def test_frstfllw(symbols): # {{{
     c=[]
     for s in symbols:
         f = first_pos(s)
         fo = follow_pos(s)
         c.append([s,' '.join(f),' '.join(fo)])
     return c
+# }}}

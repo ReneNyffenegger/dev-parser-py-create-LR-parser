@@ -1,3 +1,4 @@
+# vim: foldmarker={{{,}}} foldmethod=marker
 
 # Symbol: {name} 
 # Symbols table : { {name} {type:0=terminal / 1=non-terminal} }
@@ -5,7 +6,7 @@
 # state: {index} {Rules} {leaf}
 # Transitions graph: {List: {index of Source State} {index of Distination State} {transition symbol}}
 
-class State:
+class State: # {{{
     _n=0 # start index of states (made to change manually here)
     _count=0+_n
     graph=[]
@@ -66,8 +67,8 @@ class State:
             s[i]=s[i]+' '*pad+']'
         s.insert(0,''.join(['I',str(self._i),':',' '*(max_len-2)]))        
         return '\n'.join(s)
-
-class Rule:
+# }}}
+class Rule: # {{{
     _n=0 # start index of augmented grammar
     augmented = []
     def __init__(self, lhs, rhs=[], dot_index=0):
@@ -132,3 +133,4 @@ class Rule:
     def copy(self):
         '''ignore colsure and visited attributes'''
         return Rule(self.lhs,self.rhs)
+# }}}

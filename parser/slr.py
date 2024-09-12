@@ -1,3 +1,4 @@
+# vim: foldmarker={{{,}}} foldmethod=marker
 
 from follow import follow_pos
 from state import *
@@ -8,7 +9,7 @@ from pandas import DataFrame as df, MultiIndex
 states = []
 parsing_table = df()
 
-def grammar_fromstr(g):
+def grammar_fromstr(g): # {{{
     '''1 split each line
     2 separate LHS from RHS
     3 split HRSs i.e.: X => Y | Z
@@ -22,8 +23,8 @@ def grammar_fromstr(g):
         for rhs in rhs_ls.split('|'):
             rules.append((lhs.strip(),rhs.strip().split()))
     return rules
-
-def augment(grammar_str):
+# }}}
+def augment(grammar_str): # {{{
     '''
     - Rules must be in form LHS => RHS
     - NONTERMINALS must start with (`) and be UPPERCASE. use only [A-Z] and (_) for NONTERMINALS
@@ -40,8 +41,8 @@ def augment(grammar_str):
     for r in grammar:
         Rule.augmented.append(Rule(r[0],r[1]))
     return s, extract_symbols(grammar)
-
-def extract_symbols(rules):
+# }}}
+def extract_symbols(rules): # {{{
     terminals = []
     non_terminals = []
     for r in rules:
@@ -57,8 +58,8 @@ def extract_symbols(rules):
                     non_terminals.append(s)
     terminals.append('$')
     return (non_terminals, terminals)
-
-def goto_operation():
+# }}}
+def goto_operation(): # {{{
     #s = states[0]
     for s in states:
         transitions = []
@@ -79,14 +80,15 @@ def goto_operation():
             make_transition(s, items_same_X) 
     return State.graph
 
-def gotoself(transitions, s):
+# }}}
+def gotoself(transitions, s): # {{{
     # If a new transition is already in the current state, make a cycle
     for t in transitions:
         if t[1] in s.rules:
             s.goto( s._i, t[0])
             transitions.remove(t)
-
-def make_transition(source, items_same_X):
+# }}}
+def make_transition(source, items_same_X): # {{{
     new_state = newstate(items_same_X)
     ### exists
     # If new Items I alraedy there in a state s, goto s
@@ -103,20 +105,20 @@ def make_transition(source, items_same_X):
         new_state.closure()
         states.append(new_state)
         source.goto(new_state._i, symbol=items_same_X[0][0])
-
-def newstate(items_same_X):
+# }}}
+def newstate(items_same_X): # {{{
     new_state = State()
     for r in items_same_X:
         new_state.add_rule(r[1])
     return new_state
-
-def parsing_table_skelton(non_terminals, terminals):
+# }}}
+def parsing_table_skelton(non_terminals, terminals): # {{{
     levels = (['action']*len(terminals) + ['goto']*len(non_terminals))
     columns = terminals+non_terminals
     index = [s._i for s in states]
     return df(index=index, columns=MultiIndex.from_tuples(list(zip(levels,columns)),names=['table','symbol'])).fillna('_')
-
-def slr_parsing_table(items):
+# }}}
+def slr_parsing_table(items): # {{{
     global parsing_table
     for i in items:
         isterminal = not i[2].startswith('`')
@@ -142,8 +144,8 @@ def slr_parsing_table(items):
                 if cell !='_':
                     print('conflict: '+cell + '    r'+str(r[2]+n))
                 parsing_table.loc[(r[1]), ('action', f)] = 'r'+str(r[2]+n)
-
-def moves(s):
+# }}}
+def moves(s): # {{{
     snap=[]
     stack = [('$',State._n)]
     input_ = s.split()+['$']
@@ -173,8 +175,8 @@ def moves(s):
             print('Driver: Syntax error')
             break
     return df(data=list(zip([s[0] for s in snap],[s[1]for s in snap],action)) ,columns=('Stack','Input','Action'))
-
-def draw(graph):
+# }}}
+def draw(graph): # {{{
     import networkx
     import matplotlib.pyplot as plt
     print('pygraphviz is required to draw cycles(state goes to itself) if exists')
@@ -188,7 +190,8 @@ def draw(graph):
     networkx.draw_networkx_edge_labels(g,pos,edge_labels={(str(states[e[0]-n]), str(states[e[1]-n])):e[2] for e in graph})
     plt.show()
 
-def run(grammar):
+# }}}
+def run(grammar): # {{{
     global parsing_table
     start_state, symbols = augment(grammar)
     start_state.closure()
@@ -198,8 +201,8 @@ def run(grammar):
     slr_parsing_table(items)
     return items
 
-
-def test(grammar, test_string):
+# }}}
+def test(grammar, test_string): # {{{
     states_graph = run(grammar)
     for s in states:
         print(s, end='\n')
@@ -210,7 +213,7 @@ def test(grammar, test_string):
 
     driver_table = moves(test_string) # lexemes of test_string  must separated with spaces
     print(driver_table)
-
+# }}}
 if __name__ == '__main__':
     print(augment.__doc__)
     g4 = """`E => `E + `T
