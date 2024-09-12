@@ -7,24 +7,28 @@
 # Transitions graph: {List: {index of Source State} {index of Distination State} {transition symbol}}
 
 class State: # {{{
+
     _n=0 # start index of states (made to change manually here)
     _count=0+_n
     graph=[]
 
-    def __init__(self):
+    def __init__(self): # {{{
+
         self.rules = []
         self._i = State._count
-        self.hasreduce=0 # The state has a rule to reduce
+        self.hasreduce = 0 # The state has a rule to reduce
         State._count = State._count+1
     
-    def add_rule(self, rule):
+    # }}}
+    def add_rule(self, rule): # {{{
         '''add new rule to the state'''
         if rule not in self.rules:
             self.rules.append(rule)
             if rule._closure==-1:
                 self.hasreduce=1
     
-    def goto(self, distination_index, symbol):
+    # }}}
+    def goto(self, distination_index, symbol): # {{{
         '''
         add a transition -with a symbol, between a state and its successor 
         '''
@@ -33,7 +37,8 @@ class State: # {{{
         if g not in State.graph:
             State.graph.append(g)
     
-    def closure(self): # closure operation
+    # }}}
+    def closure(self): # {{{ closure operation 
         for rule in self.rules:
             if rule.visited:
                 continue
@@ -41,7 +46,8 @@ class State: # {{{
                 if r not in self.rules:
                     self.add_rule(r)
 
-    def __eq__(self, s):
+    # }}}
+    def __eq__(self, s): # {{{
         "If self rules in s rules"
         if not isinstance(s, State):
             # don't attempt to compare against unrelated types
@@ -54,7 +60,8 @@ class State: # {{{
             eq = eq and (r in s.rules)
         return eq
 
-    def __str__(self):
+    # }}}
+    def __str__(self): # {{{
         s = []
         max_len=1
         for r in self.rules:
@@ -67,6 +74,7 @@ class State: # {{{
             s[i]=s[i]+' '*pad+']'
         s.insert(0,''.join(['I',str(self._i),':',' '*(max_len-2)]))        
         return '\n'.join(s)
+     # }}}
 # }}}
 class Rule: # {{{
 
