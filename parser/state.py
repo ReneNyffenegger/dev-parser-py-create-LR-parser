@@ -69,10 +69,20 @@ class State: # {{{
         return '\n'.join(s)
 # }}}
 class Rule: # {{{
+
     _n=0 # start index of augmented grammar
+
     augmented = []
-    def __init__(self, lhs, rhs=[], dot_index=0):
-        self.lhs = lhs
+
+    def __init__(self, name, rhs=[], dot_index=0): # {{{
+     
+     #
+     #  lhs = ruleName
+     #
+
+        print(f'rulename = {name}')
+
+        self.lhs = name
         if rhs == ['!εpslon']:
             self.rhs=[]
         else:
@@ -83,26 +93,30 @@ class Rule: # {{{
             self._closure = -1
         
         self.visited = 0
-
-    def __str__(self):
+    # }}}
+    def __str__(self): # {{{
         rhs = list(self.rhs)
         dot = self._closure
         if dot == -1:
             dot = len(rhs)
         rhs.insert(dot, '•')
+
         return self.lhs + ' → ' + ' '.join(rhs)
 
-    def __eq__(self, rule):
+    # }}}
+    def __eq__(self, rule): # {{{
         if not isinstance(rule, Rule):
             # don't attempt to compare against unrelated types
             # https://stackoverflow.com/a/1227325
             return NotImplemented
         return self.lhs == rule.lhs and self.rhs == rule.rhs and self._closure == rule._closure
 
-    def handle(self):
+    # }}}
+    def handle(self): # {{{
         return self.rhs[self._closure]
 
-    def visit(self):
+    # }}}
+    def visit(self): # {{{
         '''
         Mark rule as visited and expand in their state
         '''
@@ -114,15 +128,17 @@ class Rule: # {{{
                 return [r.copy() for r in Rule.augmented if r.lhs == handle]
         return []
         
-    def dotatend(self):
+    # }}}
+    def dotatend(self): # {{{
         '''
-        checks if we reachs the end if the rule
+        checks if we reach the end if the rule
         '''
         if self._closure == len(self.rhs):
             return True
         return False
 
-    def movedot(self):
+    # }}}
+    def movedot(self): # {{{
         '''
         move the . closure and return a new rule for a new state
         '''
@@ -130,7 +146,9 @@ class Rule: # {{{
             return None
         return Rule(self.lhs, self.rhs, self._closure + 1)
     
-    def copy(self):
+    # }}}
+    def copy(self): # {{{
         '''ignore colsure and visited attributes'''
         return Rule(self.lhs,self.rhs)
+    # }}}
 # }}}

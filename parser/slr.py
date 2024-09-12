@@ -9,19 +9,38 @@ from pandas import DataFrame as df, MultiIndex
 states = []
 parsing_table = df()
 
-def grammar_fromstr(g): # {{{
-    '''1 split each line
-    2 separate LHS from RHS
-    3 split HRSs i.e.: X => Y | Z
-    4 for each RHS r, make a rule LHS => r
-    '''
-    grm = g.split('\n')
+def grammar_fromstr(grammar_str): # {{{
+ #
+ #  Return an array of tuples
+ #  Each tuple has a rule name (not necessarily unique) and
+ #  a production
+ #
+
     rules = []
-    for r in grm:
-        if r.strip()=='':continue # skip empty lines
-        lhs, rhs_ls = r.split('=>')
-        for rhs in rhs_ls.split('|'):
-            rules.append((lhs.strip(),rhs.strip().split()))
+
+ #
+ #  The grammar is organized in lines
+ #    (Each line seems to correspond to a rule)
+ #
+ #  We iterate over each line:
+ #
+    for rule_str in grammar_str.split('\n'):
+
+        if rule_str.strip() == '':
+        #
+        # skip empty lines
+        #
+           continue
+
+        rule_name, productions = rule_str.split('=>')
+   
+        for production in productions.split('|'):
+        #
+        #   Iterate over each production of the rule
+        #     Multiple productions can be separated by a vertical bar
+        #
+            rules.append( ( rule_name.strip(), production.strip().split() ) )
+
     return rules
 # }}}
 def augment(grammar_str): # {{{
@@ -32,15 +51,23 @@ def augment(grammar_str): # {{{
     - If there are many rhs for one lhs, you should put them all in the same line and separate them with (|) i.e: X => Y | Z | !εpslon
     - Use the form (!εpslon) for writing epslons 
     '''
-    grammar= grammar_fromstr(grammar_str)
-    rhs = [grammar[0][0]] # The start symbol
-    aug=Rule(grammar[0][0]+"'", tuple(rhs))
+    rules = grammar_fromstr(grammar_str)
+
+    rhs = [rules [0][0]] # The start symbol
+    print('Start symbol')
+    print(rhs)
+
+    aug=Rule( rules [0][0]+"'", tuple(rhs) )
+
     s = State()
     s.add_rule(aug)
     Rule.augmented.append(aug)
-    for r in grammar:
-        Rule.augmented.append(Rule(r[0],r[1]))
-    return s, extract_symbols(grammar)
+
+    for rule in rules :
+        Rule.augmented.append(Rule( rule[0], rule[1] ))
+
+    return s, extract_symbols(rules )
+
 # }}}
 def extract_symbols(rules): # {{{
     terminals = []
