@@ -215,13 +215,16 @@ def test(grammar, test_string): # {{{
     print(driver_table)
 # }}}
 if __name__ == '__main__':
+
     print(augment.__doc__)
-    g4 = """`E => `E + `T
+
+    grammar = """`E => `E + `T
     `E => `T 
     `T => `T * `F 
     `T => `F 
     `F => ( `E ) 
     `F => id"""
 
-    print(g4, end='\n------grammar------\n\n')
-    test(g4, 'id + id * id')
+    print(grammar, end='\n------grammar------\n\n')
+
+    test(grammar, 'id + id * id')
