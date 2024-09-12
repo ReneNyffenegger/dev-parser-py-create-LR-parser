@@ -113,10 +113,12 @@ def newstate(items_same_X): # {{{
     return new_state
 # }}}
 def parsing_table_skelton(non_terminals, terminals): # {{{
+
     levels = (['action']*len(terminals) + ['goto']*len(non_terminals))
     columns = terminals+non_terminals
     index = [s._i for s in states]
     return df(index=index, columns=MultiIndex.from_tuples(list(zip(levels,columns)),names=['table','symbol'])).fillna('_')
+
 # }}}
 def slr_parsing_table(items): # {{{
     global parsing_table
@@ -191,19 +193,24 @@ def draw(graph): # {{{
     plt.show()
 
 # }}}
-def run(grammar): # {{{
+def run(grammar_str): # {{{
     global parsing_table
-    start_state, symbols = augment(grammar)
+
+    start_state, symbols = augment(grammar_str)
+
     start_state.closure()
     states.append(start_state)
     items = goto_operation()
-    parsing_table =  parsing_table_skelton(symbols[0], symbols[1])
+
+    parsing_table = parsing_table_skelton(symbols[0], symbols[1])
     slr_parsing_table(items)
     return items
 
 # }}}
-def test(grammar, test_string): # {{{
-    states_graph = run(grammar)
+def test(grammar_str, test_string): # {{{
+
+    states_graph = run(grammar_str)
+
     for s in states:
         print(s, end='\n')
 
@@ -218,13 +225,13 @@ if __name__ == '__main__':
 
     print(augment.__doc__)
 
-    grammar = """`E => `E + `T
+    grammar_str = """`E => `E + `T
     `E => `T 
     `T => `T * `F 
     `T => `F 
     `F => ( `E ) 
     `F => id"""
 
-    print(grammar, end='\n------grammar------\n\n')
+    print(grammar_str, end='\n------grammar------\n\n')
 
-    test(grammar, 'id + id * id')
+    test(grammar_str, 'id + id * id')
