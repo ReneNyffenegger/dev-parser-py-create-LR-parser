@@ -115,7 +115,7 @@ class Rule:
         
     def dotatend(self):
         '''
-        checks if we reachs the end if the rule
+        checks if we reached the end if the rule
         '''
         if self._closure == len(self.rhs):
             return True
@@ -130,5 +130,5 @@ class Rule:
         return Rule(self.lhs, self.rhs, self._closure + 1)
     
     def copy(self):
-        '''ignore colsure and visited attributes'''
+        '''ignore closure and visited attributes'''
         return Rule(self.lhs,self.rhs)
